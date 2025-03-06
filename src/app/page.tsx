@@ -6,14 +6,21 @@ import {
   DropdownMenuContent,
   DropdownMenuSeparator,
 } from '@radix-ui/react-dropdown-menu';
-
 import { Button } from './components/Button';
-import { BirdIcon, CatIcon, ChevronDownIcon, DogIcon, RatIcon, SearchIcon, HamsterIcon } from './icons';
-import ToggleButtons from '@/app/components/ToggleButton';
-
+import ToggleButtons from './components/ToggleButton';
+import {
+  BirdIcon,
+  CatIcon,
+  ChevronDownIcon,
+  DogIcon,
+  RatIcon,
+  SearchIcon,
+  HamsterIcon,
+} from './icons';
 
 type SearchQuery = {
-  search: string;
+  searchText: string;
+  species: string;
 };
 
 enum Animals {
@@ -26,31 +33,34 @@ enum Animals {
 }
 
 export default function App() {
-  const [searchQuery, setSearchQuery] = useState({ search: '', species: '' });
+  const [searchQuery, setSearchQuery] = useState({
+    searchText: '',
+    species: '',
+  });
   const [selectedAnimals, setSelectedAnimals] = useState<string[]>([]);
   const deferredSearchTerm = useDeferredValue(searchQuery); // minimize page redraw impact
   const [abortController, setAbortController] =
     useState<AbortController | null>(null); // increase performance by abort network request
-
+  const [searchResult, setSearchResult] = useState([]);
   const prepareAbort = () => {
     const controller = new AbortController();
     const signal = controller.signal;
 
     if (abortController) {
       abortController.abort();
-      console.log('Previous request aborted');
+      console.info('Previous request aborted');
     }
 
     setAbortController(controller);
     return signal;
-  }
+  };
 
   useEffect(() => {
-    if (!searchQuery.search) return;
+    if (!searchQuery.searchText) return;
     if (deferredSearchTerm) {
       fetchData(searchQuery, prepareAbort()).catch((error) => {
         if (error.name === 'AbortError') {
-          console.log('Fetch aborted:', searchQuery);
+          console.info('Fetch was aborted:', searchQuery);
         }
       });
     }
@@ -58,7 +68,7 @@ export default function App() {
 
   const fetchData = async (query: SearchQuery, signal: AbortSignal) => {
     try {
-      console.log(`Fetching data for:`, query);
+      console.info(`Fetching data for:`, query);
       const response = await fetch(
         `/api/customers?${new URLSearchParams(query).toString()}`,
         { signal },
@@ -67,7 +77,8 @@ export default function App() {
       if (!response.ok) throw new Error('Network response was not ok');
 
       const data = await response.json();
-      console.log('API Response:', data);
+      console.info('API Response:', data);
+      setSearchResult(data?.customers);
     } catch (error: unknown) {
       if (error instanceof Error && error.name !== 'AbortError') {
         console.error('Fetch error:', error);
@@ -76,7 +87,7 @@ export default function App() {
   };
 
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setSearchQuery({ ...searchQuery, search: e.target.value });
+    setSearchQuery({ ...searchQuery, searchText: e.target.value });
   };
 
   const handleAnimalSelection = (animal: keyof typeof Animals) => {
@@ -93,24 +104,30 @@ export default function App() {
   };
 
   const handleApplyFilters = () => {
-    console.log('Applied Filters:', { searchQuery, selectedAnimals });
+    console.info('Applied Filters:', { searchQuery, selectedAnimals });
     searchQuery.species = selectedAnimals.join(',');
     fetchData(searchQuery, prepareAbort()).catch((error) => {
       if (error.name === 'AbortError') {
-        console.log('Fetch aborted:', searchQuery);
+        console.info('Fetch aborted:', searchQuery);
       }
     });
   };
 
+  const isDogSelected = selectedAnimals.includes(Animals.dog);
+  const isCatSelected = selectedAnimals.includes(Animals.cat);
+  const isBirdSelected = selectedAnimals.includes(Animals.bird);
+  const isHamsterSelected = selectedAnimals.includes(Animals.hamster);
+  const isRatsSelected = selectedAnimals.includes(Animals.rat);
+
   return (
     <div className="container mx-auto p-6 text-sm">
-      <div className="mb-6 bg-background p-8 h-[150px]">
+      <div className="mb-6 bg-background p-8 h-[150px] min-w-[570px]">
         <h2 className="text-2xl font-semibold">Customers and Pets</h2>
-        <SearchIcon className="relative top-[28px] left-[12px]"  />
+        <SearchIcon className="relative top-[28px] left-[12px]" />
         <input
           id="search"
-          type="text"
-          value={searchQuery.search}
+          type="search"
+          value={searchQuery.searchText}
           onChange={handleSearchChange}
           className="border p-2 pl-10 mb-4 w-[312px] h-[40px] top-[132px] left-[90px] mr-4 rounded-lg"
           placeholder="Search by ID, name, email or phone"
@@ -138,52 +155,61 @@ export default function App() {
               </ToggleButtons>
               <ToggleButtons
                 onPressedChange={() => handleAnimalSelection(Animals.dog)}
-                icon={<DogIcon />}
-                pressed={selectedAnimals.includes(Animals.dog)}
+                icon={<DogIcon selected={isDogSelected} />}
+                pressed={isDogSelected}
               >
                 Dogs
               </ToggleButtons>
               <ToggleButtons
                 onPressedChange={() => handleAnimalSelection(Animals.cat)}
-                icon={<CatIcon />}
-                pressed={selectedAnimals.includes(Animals.cat)}
+                icon={<CatIcon selected={isCatSelected} />}
+                pressed={isCatSelected}
               >
                 Cats
               </ToggleButtons>
               <ToggleButtons
                 onPressedChange={() => handleAnimalSelection(Animals.bird)}
-                icon={<BirdIcon />}
-                pressed={selectedAnimals.includes(Animals.bird)}
+                icon={<BirdIcon selected={isBirdSelected} />}
+                pressed={isBirdSelected}
               >
                 Birds
               </ToggleButtons>
               <ToggleButtons
                 onPressedChange={() => handleAnimalSelection(Animals.hamster)}
-                icon={<HamsterIcon />}
-                pressed={selectedAnimals.includes(Animals.hamster)}
+                icon={<HamsterIcon selected={isHamsterSelected} />}
+                pressed={isHamsterSelected}
               >
                 Hamsters
               </ToggleButtons>
               <ToggleButtons
                 onPressedChange={() => handleAnimalSelection(Animals.rat)}
-                icon={<RatIcon />}
-                pressed={selectedAnimals.includes(Animals.rat)}
+                icon={<RatIcon selected={isRatsSelected} />}
+                pressed={isRatsSelected}
               >
                 Rats
               </ToggleButtons>
             </div>
 
-            <DropdownMenuSeparator className="my-3 border" />
+            <DropdownMenuSeparator className="my-3 border relative right-4 w-[334px]"/>
 
             <div className="flex gap-4">
-              <Button className="grow-[4]" onClick={handleReset}>Reset</Button>
-              <Button className="grow-[2]" onClick={handleApplyFilters} color="blue">
+              <Button className="grow-[4]" onClick={handleReset}>
+                Reset
+              </Button>
+              <Button
+                className="grow-[2]"
+                onClick={handleApplyFilters}
+                color="blue"
+              >
                 Apply Filters
               </Button>
             </div>
           </DropdownMenuContent>
         </DropdownMenu>
       </div>
+      {searchResult.map((item: { id: string }) => (
+        <pre key={item.id}>{JSON.stringify(item)}</pre>
+      ))}
     </div>
   );
 }

@@ -3,15 +3,19 @@
 @tailwind utilities;
 
 body {
-    background: black;
+    /*background: black;*/
     /*color: white;*/
 }
 
-
+pre {
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
 
 #search {
      box-sizing: border-box;
      border: 1.5px solid rgba(22, 98, 198, 0);
+    color: black
 }
 
 #search:focus-visible {
