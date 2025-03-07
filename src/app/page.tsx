@@ -6,6 +6,7 @@ import {
   DropdownMenuContent,
   DropdownMenuSeparator,
 } from '@radix-ui/react-dropdown-menu';
+import { motion } from 'framer-motion';
 import { Button } from './components/Button';
 import ToggleButtons from './components/ToggleButton';
 import {
@@ -42,6 +43,7 @@ export default function App() {
   const [abortController, setAbortController] =
     useState<AbortController | null>(null); // increase performance by abort network request
   const [searchResult, setSearchResult] = useState([]);
+
   const prepareAbort = () => {
     const controller = new AbortController();
     const signal = controller.signal;
@@ -141,69 +143,73 @@ export default function App() {
               </span>
             </button>
           </DropdownMenuTrigger>
-          <DropdownMenuContent
-            className="bg-white p-4 rounded-md shadow-lg max-w-[334px]"
-            align="start"
-            sideOffset={5}
-          >
-            <div className="flex flex-wrap gap-2 max-w-[300px] justify-center">
-              <ToggleButtons
-                onPressedChange={() => handleAnimalSelection(Animals.any)}
-                pressed={selectedAnimals.includes(Animals.any)}
-              >
-                Any Animal
-              </ToggleButtons>
-              <ToggleButtons
-                onPressedChange={() => handleAnimalSelection(Animals.dog)}
-                icon={<DogIcon selected={isDogSelected} />}
-                pressed={isDogSelected}
-              >
-                Dogs
-              </ToggleButtons>
-              <ToggleButtons
-                onPressedChange={() => handleAnimalSelection(Animals.cat)}
-                icon={<CatIcon selected={isCatSelected} />}
-                pressed={isCatSelected}
-              >
-                Cats
-              </ToggleButtons>
-              <ToggleButtons
-                onPressedChange={() => handleAnimalSelection(Animals.bird)}
-                icon={<BirdIcon selected={isBirdSelected} />}
-                pressed={isBirdSelected}
-              >
-                Birds
-              </ToggleButtons>
-              <ToggleButtons
-                onPressedChange={() => handleAnimalSelection(Animals.hamster)}
-                icon={<HamsterIcon selected={isHamsterSelected} />}
-                pressed={isHamsterSelected}
-              >
-                Hamsters
-              </ToggleButtons>
-              <ToggleButtons
-                onPressedChange={() => handleAnimalSelection(Animals.rat)}
-                icon={<RatIcon selected={isRatsSelected} />}
-                pressed={isRatsSelected}
-              >
-                Rats
-              </ToggleButtons>
-            </div>
-
-            <DropdownMenuSeparator className="my-3 border relative right-4 w-[334px]"/>
-
-            <div className="flex gap-4">
-              <Button className="grow-[4]" onClick={handleReset}>
-                Reset
-              </Button>
-              <Button
-                className="grow-[2]"
-                onClick={handleApplyFilters}
-                color="blue"
-              >
-                Apply Filters
-              </Button>
-            </div>
+          <DropdownMenuContent asChild
+                               align="start"
+                               sideOffset={5}>
+            <motion.div
+              initial={{ opacity: 0, y: -10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -10 }}
+              transition={{ duration: 0.2 }}
+              className="bg-white p-4 rounded-md shadow-lg max-w-[334px]"
+            >
+              <div className="flex flex-wrap gap-2 max-w-[300px] justify-center">
+                <ToggleButtons
+                  onPressedChange={() => handleAnimalSelection(Animals.any)}
+                  pressed={selectedAnimals.includes(Animals.any)}
+                >
+                  Any Animal
+                </ToggleButtons>
+                <ToggleButtons
+                  onPressedChange={() => handleAnimalSelection(Animals.dog)}
+                  icon={<DogIcon selected={isDogSelected} />}
+                  pressed={isDogSelected}
+                >
+                  Dogs
+                </ToggleButtons>
+                <ToggleButtons
+                  onPressedChange={() => handleAnimalSelection(Animals.cat)}
+                  icon={<CatIcon selected={isCatSelected} />}
+                  pressed={isCatSelected}
+                >
+                  Cats
+                </ToggleButtons>
+                <ToggleButtons
+                  onPressedChange={() => handleAnimalSelection(Animals.bird)}
+                  icon={<BirdIcon selected={isBirdSelected} />}
+                  pressed={isBirdSelected}
+                >
+                  Birds
+                </ToggleButtons>
+                <ToggleButtons
+                  onPressedChange={() => handleAnimalSelection(Animals.hamster)}
+                  icon={<HamsterIcon selected={isHamsterSelected} />}
+                  pressed={isHamsterSelected}
+                >
+                  Hamsters
+                </ToggleButtons>
+                <ToggleButtons
+                  onPressedChange={() => handleAnimalSelection(Animals.rat)}
+                  icon={<RatIcon selected={isRatsSelected} />}
+                  pressed={isRatsSelected}
+                >
+                  Rats
+                </ToggleButtons>
+              </div>
+              <DropdownMenuSeparator className="my-3 border relative right-4 w-[334px]" />
+              <div className="flex gap-4">
+                <Button className="grow-[4]" onClick={handleReset}>
+                  Reset
+                </Button>
+                <Button
+                  className="grow-[2]"
+                  onClick={handleApplyFilters}
+                  color="blue"
+                >
+                  Apply Filters
+                </Button>
+              </div>
+            </motion.div>
           </DropdownMenuContent>
         </DropdownMenu>
       </div>
