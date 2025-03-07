@@ -1,4 +1,4 @@
-import data from "./customers.json";
+import data from './customers.json';
 
 type Pet = {
   id: string;
@@ -16,11 +16,11 @@ type Customer = {
 
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
-  const searchText = searchParams.get("searchText")?.toLowerCase() || "";
+  const searchText = searchParams.get('searchText')?.toLowerCase() || '';
   const species =
     searchParams
-      .get("species")
-      ?.split(",")
+      .get('species')
+      ?.split(',')
       .map((s) => s.trim())
       .filter(Boolean) || [];
 
@@ -49,7 +49,7 @@ export async function GET(request: Request) {
 
   return new Response(JSON.stringify({ customers: filteredCustomers }), {
     headers: {
-      "Content-Type": "application/json",
+      'Content-Type': 'application/json',
     },
   });
 }
