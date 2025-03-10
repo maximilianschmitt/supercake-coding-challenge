@@ -1,4 +1,5 @@
-# Customers and Pets - React Application
+# Supercake Coding Challenge by Andrii Trybyneko from CoventIT / Riskified 
+
 
 ## Table of Contents
 - [Installation](#installation)
