@@ -110,6 +110,10 @@ Example Animation Code:
 ## Contributing
 Feel free to open a pull request or report issues on GitHub.
 
+## Running Tests
+
+`npx jest --verbose`
+
 ---
 
 ## License

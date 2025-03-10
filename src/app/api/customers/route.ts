@@ -43,6 +43,7 @@ export async function GET(request: Request) {
 
   if (species.length > 0) {
     filteredCustomers = filteredCustomers.filter((customer) =>
+      customer.pets.length > 0 && species.includes('any') ||
       customer.pets.some((pet) => species.includes(pet.species)),
     );
   }
